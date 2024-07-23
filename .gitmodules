@@ -1,0 +1,3 @@
+[submodule "WindowBase"]
+	path = WindowBase
+	url = https://github.com/DarranRowe/WindowBase.git

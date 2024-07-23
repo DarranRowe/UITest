@@ -169,6 +169,11 @@
     <ClInclude Include="framework.h" />
     <ClInclude Include="window.h" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\WindowBase\windowbase\windowbase.vcxproj">
+      <Project>{d80f5cdc-7dc8-4bd5-8a66-0a55636ac2a2}</Project>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
     <Import Project="..\packages\Microsoft.Windows.ImplementationLibrary.1.0.240122.1\build\native\Microsoft.Windows.ImplementationLibrary.targets" Condition="Exists('..\packages\Microsoft.Windows.ImplementationLibrary.1.0.240122.1\build\native\Microsoft.Windows.ImplementationLibrary.targets')" />
