@@ -1,39 +1,30 @@
 #include "framework.h"
 #include "debug_helper.h"
+#include <application.hpp>
+#include <apartment.hpp>
+#include <application_dispatcher_queue.hpp>
 #include "window.h"
 
-#include <DispatcherQueue.h>
-
-struct apartment_init
-{
-	apartment_init()
-	{
-		winrt::init_apartment(winrt::apartment_type::single_threaded);
-	}
-};
-
-static apartment_init s_init_apartment;
-static winrt::Windows::System::DispatcherQueueController s_dispatcher_queue_controller{ nullptr };
+static application::apartment s_main_apartment{ application::winrt };
+static application::application_system_dispatcher_queue s_app_dispatcher_queue{};
 
 int protected_main(HINSTANCE inst, int cmd_show)
 {
-	winrt::check_hresult(CreateDispatcherQueueController(DispatcherQueueOptions{ sizeof(DispatcherQueueOptions), DQTYPE_THREAD_CURRENT, DQTAT_COM_NONE }, reinterpret_cast<PDISPATCHERQUEUECONTROLLER *>(winrt::put_abi(s_dispatcher_queue_controller))));
+	int main_result = 0;
+	application::application main_application;
+	auto app_thread = main_application.get_for_thread();
+	s_app_dispatcher_queue.create_dispatcher_queue_on_thread();
+	windowing::main_window *main_window_ptr = windowing::main_window::create(inst);
 
-	window::main_window *my_window = window::main_window::create_window(inst);
-
-	if (!my_window)
+	if (main_window_ptr)
 	{
-		return -1;
+		main_window_ptr->show_window_cmd(cmd_show);
+		main_window_ptr->update_window();
+
+		main_result = app_thread.run_message_pump();
 	}
 
-	MSG msg{};
-	while (GetMessageW(&msg, nullptr, 0, 0))
-	{
-		TranslateMessage(&msg);
-		DispatchMessageW(&msg);
-	}
-
-	return static_cast<int>(msg.wParam);
+	return main_result;
 }
 
 int WINAPI wWinMain(_In_ HINSTANCE inst, _In_opt_ HINSTANCE, _In_ LPWSTR, _In_ int cmd_show)
