@@ -1,4 +1,5 @@
 #include "window.h"
+#include "application.hpp"
 #include "debug_helper.h"
 
 namespace windowing
@@ -50,9 +51,24 @@ namespace windowing
 		return ptr;
 	}
 
+	bool main_window::callback(const MSG &m)
+	{
+		return true;
+	}
+
 	bool main_window::on_create(const CREATESTRUCTW &)
 	{
 		bool succeeded = true;
+
+		auto ci = application::application::try_get_current_instance();
+		if (ci.has_value())
+		{
+			auto cii = ci.value();
+
+			auto t = cii.get_for_thread();
+
+			add_message_callback(make_message_callback(&main_window::callback, this), 10);
+		}
 
 		return succeeded;
 	}

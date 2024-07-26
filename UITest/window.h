@@ -23,6 +23,8 @@ namespace windowing
 		using my_base::simple_default_message_handler;
 		LRESULT message_handler(UINT, WPARAM, LPARAM);
 
+		bool callback(const MSG &);
+
 		inline static wchar_t class_name[] = L"Main Window Class";
 	private:
 		//Needed for window_t to access message_handler.
