@@ -7,6 +7,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "UITest", "UITest\UITest.vcx
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "windowbase", "WindowBase\windowbase\windowbase.vcxproj", "{D80F5CDC-7DC8-4BD5-8A66-0A55636AC2A2}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "windowbase_shared", "WindowBase\windowbase_shared\windowbase_shared.vcxitems", "{59779DE3-B54C-494C-89C6-FDB7CB3A4F49}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|ARM64 = Debug|ARM64
