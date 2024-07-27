@@ -66,7 +66,6 @@ namespace windowing
 
 	void main_window::on_destroy()
 	{
-		PostQuitMessage(0);
 	}
 
 	void main_window::on_size(resize_type, int32_t, int32_t)
