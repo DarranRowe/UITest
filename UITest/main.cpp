@@ -1,5 +1,4 @@
 #include "framework.h"
-#include "debug_helper.h"
 #include <application.hpp>
 #include <application_helper.hpp>
 #include <apartment.hpp>
