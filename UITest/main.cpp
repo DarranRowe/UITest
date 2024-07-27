@@ -1,6 +1,7 @@
 #include "framework.h"
 #include "debug_helper.h"
 #include <application.hpp>
+#include <application_helper.hpp>
 #include <apartment.hpp>
 #include <application_dispatcher_queue.hpp>
 #include "window.h"
@@ -29,13 +30,14 @@ int protected_main(HINSTANCE inst, int cmd_show)
 
 int WINAPI wWinMain(_In_ HINSTANCE inst, _In_opt_ HINSTANCE, _In_ LPWSTR, _In_ int cmd_show)
 {
+	using namespace application::helper;
 	try
 	{
 		return protected_main(inst, cmd_show);
 	}
 	catch (...)
 	{
-		debug_helper::writeln_debugger(L"Uncaught exception in wWinMain.");
+		writeln_debugger(L"Uncaught exception in wWinMain.");
 	}
 
 	return -1;

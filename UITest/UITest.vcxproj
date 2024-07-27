@@ -220,7 +220,6 @@
     </Manifest>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="console_helper.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="window.cpp" />
   </ItemGroup>
@@ -231,7 +230,6 @@
     <Manifest Include="settings.manifest" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="debug_helper.h" />
     <ClInclude Include="framework.h" />
     <ClInclude Include="window.h" />
   </ItemGroup>

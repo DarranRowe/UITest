@@ -2,7 +2,6 @@
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
     <ClCompile Include="main.cpp" />
-    <ClCompile Include="console_helper.cpp" />
     <ClCompile Include="window.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -17,6 +16,5 @@
   <ItemGroup>
     <ClInclude Include="window.h" />
     <ClInclude Include="framework.h" />
-    <ClInclude Include="debug_helper.h" />
   </ItemGroup>
 </Project>

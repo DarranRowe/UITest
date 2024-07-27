@@ -1,6 +1,6 @@
 #include "window.h"
-#include "application.hpp"
-#include "debug_helper.h"
+#include <application.hpp>
+#include <application_helper.hpp>
 
 namespace windowing
 {
@@ -11,6 +11,7 @@ namespace windowing
 	main_window *main_window::create(HINSTANCE inst)
 	{
 		using namespace std;
+		using namespace application::helper;
 
 		main_window *ptr = nullptr;
 		try
@@ -30,7 +31,7 @@ namespace windowing
 				delete ptr;
 				DWORD last_error = GetLastError();
 
-				debug_helper::writeln_debugger(L"Class registration failed. Last error: {}.", last_error);
+				writeln_debugger(L"Class registration failed. Last error: {}.", last_error);
 				return nullptr;
 			}
 
@@ -44,7 +45,7 @@ namespace windowing
 		{
 			delete ptr;
 
-			debug_helper::writeln_debugger(L"Unexpected exception caught.");
+			writeln_debugger(L"Unexpected exception caught.");
 			throw;
 		}
 
