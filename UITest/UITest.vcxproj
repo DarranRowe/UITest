@@ -228,6 +228,7 @@
     </Manifest>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="draw_interface.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="window.cpp" />
   </ItemGroup>
@@ -238,6 +239,7 @@
     <Manifest Include="settings.manifest" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="draw_interface.h" />
     <ClInclude Include="framework.h" />
     <ClInclude Include="window.h" />
   </ItemGroup>

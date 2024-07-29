@@ -16,6 +16,12 @@ int protected_main(HINSTANCE inst, int cmd_show)
 	s_app_dispatcher_queue.create_dispatcher_queue_on_thread();
 	windowing::main_window *main_window_ptr = windowing::main_window::create(inst);
 
+	app_thread.add_pump_simple_callback([](const MSG &msg)
+		{
+			TranslateMessage(&msg);
+			return true;
+		});
+
 	if (main_window_ptr)
 	{
 		main_window_ptr->show_window_cmd(cmd_show);

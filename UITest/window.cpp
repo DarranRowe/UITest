@@ -52,9 +52,23 @@ namespace windowing
 		return ptr;
 	}
 
+	draw_interface::draw_interface *main_window::get_draw_interface() const
+	{
+		_ASSERTE(m_draw_interface);
+
+		return m_draw_interface.get();
+	}
+
 	bool main_window::on_create(const CREATESTRUCTW &)
 	{
 		bool succeeded = true;
+
+		m_draw_interface = std::make_unique<draw_interface::draw_interface>(get_handle());
+		m_draw_interface->init_device_independent_resources();
+		m_draw_interface->init_device_dependent_resources();
+
+		//We don't initialise the sized resources here.
+		//This will happen in WM_SIZE.
 
 		return succeeded;
 	}
@@ -66,10 +80,39 @@ namespace windowing
 
 	void main_window::on_destroy()
 	{
+		m_draw_interface->cleanup_sized_resources();
+		m_draw_interface->cleanup_device_dependent_resources();
+		m_draw_interface->cleanup_device_independent_resources();
 	}
 
-	void main_window::on_size(resize_type, int32_t, int32_t)
+	void main_window::on_size(resize_type type, int32_t, int32_t)
 	{
+		if (m_draw_interface == nullptr)
+		{
+			return;
+		}
+
+		if (type == resize_type::minimized)
+		{
+			m_draw_interface->resize_hide();
+		}
+		else
+		{
+			m_draw_interface->resize();
+		}
+	}
+
+	void main_window::on_paint()
+	{
+		PAINTSTRUCT ps{};
+		auto dc = BeginPaint(get_handle(), &ps);
+
+		if (m_draw_interface)
+		{
+			m_draw_interface->update_frame();
+		}
+
+		EndPaint(get_handle(), &ps);
 	}
 
 	LRESULT main_window::message_handler(UINT msg, WPARAM wparam, LPARAM lparam)
