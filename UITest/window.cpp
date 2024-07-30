@@ -98,7 +98,13 @@ namespace windowing
 		}
 		else
 		{
-			m_draw_interface->resize();
+			RECT client_rect{};
+			
+			GetClientRect(get_handle(), &client_rect);
+			
+			SIZEL dimentions{client_rect.right - client_rect.left, client_rect.bottom - client_rect.top};
+
+			m_draw_interface->resize(dimentions);
 		}
 	}
 

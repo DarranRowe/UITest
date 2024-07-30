@@ -33,9 +33,9 @@ namespace draw_interface
 		void init_device_dependent_resources();
 		void cleanup_device_dependent_resources();
 
-		void init_sized_resources();
+		void init_sized_resources(const SIZEL &);
 		void cleanup_sized_resources();
-		void resize();
+		void resize(const SIZEL &);
 		void resize_hide();
 
 		void handle_device_lost();
@@ -48,8 +48,6 @@ namespace draw_interface
 
 	private:
 		draw_interface() = delete;
-
-		POINT client_dimentions() const;
 
 		void init_factories();
 		void cleanup_factories();
@@ -67,15 +65,15 @@ namespace draw_interface
 		void cleanup_d2d1();
 
 		void create_render_targets();
-		void create_swapchain();
-		void create_composition_objects();
+		void create_swapchain(const SIZEL &);
+		void create_composition_objects(const SIZEL &);
 
 		void cleanup_render_targets();
 		void cleanup_swap_chain();
 		void cleanup_composition_objects();
-		void resize_swap_chain();
+		void resize_swap_chain(const SIZEL &);
 		void set_render_targets();
-		void resize_composition_objects();
+		void resize_composition_objects(const SIZEL &);
 
 		//DXGI interfaces.
 		//We start off with the highest version and then

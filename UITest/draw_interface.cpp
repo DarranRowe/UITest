@@ -119,7 +119,7 @@ namespace draw_interface
 		}
 	}
 
-	void draw_interface::init_sized_resources()
+	void draw_interface::init_sized_resources(const SIZEL &dimentions)
 	{
 		try
 		{
@@ -127,9 +127,9 @@ namespace draw_interface
 
 			m_init_state = init_state::sized;
 
-			create_swapchain();
+			create_swapchain(dimentions);
 			create_render_targets();
-			create_composition_objects();
+			create_composition_objects(dimentions);
 		}
 		catch (...)
 		{
@@ -156,7 +156,7 @@ namespace draw_interface
 		}
 	}
 
-	void draw_interface::resize()
+	void draw_interface::resize(const SIZEL &dimentions)
 	{
 		try
 		{
@@ -169,14 +169,14 @@ namespace draw_interface
 
 			if (m_init_state == init_state::device_dependent)
 			{
-				init_sized_resources();
+				init_sized_resources(dimentions);
 			}
 			else
 			{
 				cleanup_render_targets();
-				resize_swap_chain();
+				resize_swap_chain(dimentions);
 				create_render_targets();
-				resize_composition_objects();
+				resize_composition_objects(dimentions);
 			}
 			set_render_targets();
 		}
@@ -220,16 +220,6 @@ namespace draw_interface
 	bool draw_interface::is_device_lost() const
 	{
 		return m_init_state == init_state::lost;
-	}
-
-	POINT draw_interface::client_dimentions() const
-	{
-		_ASSERTE(m_target_window != nullptr);
-
-		RECT client_rect{};
-		GetClientRect(m_target_window, &client_rect);
-
-		return { client_rect.right - client_rect.left, client_rect.bottom - client_rect.top };
 	}
 
 	void draw_interface::init_factories()
@@ -382,14 +372,13 @@ namespace draw_interface
 		m_d2d1_render_target = back_buffer_bitmap.as<ID2D1Bitmap1>();
 	}
 
-	void draw_interface::create_swapchain()
+	void draw_interface::create_swapchain(const SIZEL &dimentions)
 	{
 		using namespace winrt;
 		//This creates the IDXGISwapChain.
-		auto dimentions = client_dimentions();
 		DXGI_SWAP_CHAIN_DESC1 scd{};
-		scd.Width = dimentions.x;
-		scd.Height = dimentions.y;
+		scd.Width = dimentions.cx;
+		scd.Height = dimentions.cy;
 		scd.Format = DXGI_FORMAT_B8G8R8A8_UNORM;
 		scd.SampleDesc = { 1,0 };
 		scd.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
@@ -403,12 +392,11 @@ namespace draw_interface
 		m_dxgi_swapchain = dxgi_sc.as<IDXGISwapChain4>();
 	}
 
-	void draw_interface::create_composition_objects()
+	void draw_interface::create_composition_objects(const SIZEL &dimentions)
 	{
 		//This creates the WUC.ContainerVisual
 		//and the WUC.SpriteVisual for the swap chain.
 		using namespace winrt;
-		auto dimentions = client_dimentions();
 
 		auto container = m_compositor.CreateContainerVisual();
 
@@ -424,14 +412,15 @@ namespace draw_interface
 		m_sc_visual = swap_chain_visual;
 		container.Children().InsertAtBottom(swap_chain_visual);
 		m_composition_target.Root(container);
+		auto desktop_target = m_composition_target.as<winrt::Windows::UI::Composition::Desktop::DesktopWindowTarget>();
 
-		m_root_visual.Size({ static_cast<float>(dimentions.x), static_cast<float>(dimentions.y) });
-		m_sc_visual.Size({ static_cast<float>(dimentions.x), static_cast<float>(dimentions.y) });
+		m_sc_visual.Size({ static_cast<float>(dimentions.cx), static_cast<float>(dimentions.cy) });
+		m_root_visual.Size({ static_cast<float>(dimentions.cx), static_cast<float>(dimentions.cy) });
 	}
 
 	void draw_interface::cleanup_render_targets()
 	{
-		m_d3d11_devicecontext->Flush();
+		m_d3d11_devicecontext->ClearState();
 		m_d2d1_decivecontext->SetTarget(nullptr);
 
 		m_d2d1_render_target = nullptr;
@@ -450,13 +439,12 @@ namespace draw_interface
 		m_composition_target.Root(nullptr);
 	}
 
-	void draw_interface::resize_swap_chain()
+	void draw_interface::resize_swap_chain(const SIZEL &dimentions)
 	{
 		//This resizes the swapchain.
 		using namespace winrt;
-		auto dimentions = client_dimentions();
 
-		check_hresult(m_dxgi_swapchain->ResizeBuffers(0, dimentions.x, dimentions.y, DXGI_FORMAT_UNKNOWN, 0));
+		check_hresult(m_dxgi_swapchain->ResizeBuffers(0, dimentions.cx, dimentions.cy, DXGI_FORMAT_UNKNOWN, 0));
 	}
 
 	void draw_interface::set_render_targets()
@@ -464,12 +452,11 @@ namespace draw_interface
 		m_d2d1_decivecontext->SetTarget(m_d2d1_render_target.get());
 	}
 
-	void draw_interface::resize_composition_objects()
+	void draw_interface::resize_composition_objects(const SIZEL &dimentions)
 	{
 		using namespace winrt;
-		auto dimentions = client_dimentions();
 
-		m_root_visual.Size({ static_cast<float>(dimentions.x), static_cast<float>(dimentions.y) });
-		m_sc_visual.Size({ static_cast<float>(dimentions.x), static_cast<float>(dimentions.y) });
+		m_sc_visual.Size({ static_cast<float>(dimentions.cx), static_cast<float>(dimentions.cy) });
+		m_root_visual.Size({ static_cast<float>(dimentions.cx), static_cast<float>(dimentions.cy) });
 	}
 }
