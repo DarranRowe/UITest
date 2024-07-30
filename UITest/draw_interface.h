@@ -87,13 +87,13 @@ namespace draw_interface
 		winrt::com_ptr<ID3D11Device5> m_d3d11_device;
 		winrt::com_ptr<ID3D11DeviceContext4> m_d3d11_devicecontext;
 		D3D_FEATURE_LEVEL m_d3d_feature_level{};
-		winrt::com_ptr<ID3D11Texture2D1> m_d3d11_render_target;
+		std::vector<winrt::com_ptr<ID3D11Texture2D1>> m_d3d11_render_target;
 
 		//D2D1
 		winrt::com_ptr<ID2D1Factory8> m_d2d1_factory;
 		winrt::com_ptr<ID2D1Device7> m_d2d1_device;
 		winrt::com_ptr<ID2D1DeviceContext7> m_d2d1_decivecontext;
-		winrt::com_ptr<ID2D1Bitmap1> m_d2d1_render_target;
+		std::vector<winrt::com_ptr<ID2D1Bitmap1>> m_d2d1_render_target;
 
 		//DWrite
 		winrt::com_ptr<IDWriteFactory7> m_dwrite_factory;
@@ -107,6 +107,8 @@ namespace draw_interface
 		//D3D11On12 Support
 
 		bool m_use_d3d11on12 = false;
+		uint32_t m_current_surface = 0;
+		uint32_t m_max_surface = 1;
 		init_state m_init_state = init_state::uninit;
 		HWND m_target_window{};
 	};
