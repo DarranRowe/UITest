@@ -23,10 +23,6 @@ namespace draw_interface
 		winrt::Windows::UI::Composition::Compositor get_compositor() const;
 		void change_compositor(const winrt::Windows::UI::Composition::Compositor &);
 
-		void enable_d3d11on12();
-		void disable_d3d11on12();
-		bool is_d3d11on12() const;
-
 		void init_device_independent_resources();
 		void cleanup_device_independent_resources();
 
@@ -87,13 +83,13 @@ namespace draw_interface
 		winrt::com_ptr<ID3D11Device5> m_d3d11_device;
 		winrt::com_ptr<ID3D11DeviceContext4> m_d3d11_devicecontext;
 		D3D_FEATURE_LEVEL m_d3d_feature_level{};
-		std::vector<winrt::com_ptr<ID3D11Texture2D1>> m_d3d11_render_target;
+		winrt::com_ptr<ID3D11Texture2D1> m_d3d11_render_target;
 
 		//D2D1
 		winrt::com_ptr<ID2D1Factory8> m_d2d1_factory;
 		winrt::com_ptr<ID2D1Device7> m_d2d1_device;
 		winrt::com_ptr<ID2D1DeviceContext7> m_d2d1_decivecontext;
-		std::vector<winrt::com_ptr<ID2D1Bitmap1>> m_d2d1_render_target;
+		winrt::com_ptr<ID2D1Bitmap1> m_d2d1_render_target;
 
 		//DWrite
 		winrt::com_ptr<IDWriteFactory7> m_dwrite_factory;
@@ -104,11 +100,6 @@ namespace draw_interface
 		winrt::Windows::UI::Composition::Visual m_root_visual{ nullptr };
 		winrt::Windows::UI::Composition::Visual m_sc_visual{ nullptr };
 
-		//D3D11On12 Support
-
-		bool m_use_d3d11on12 = false;
-		uint32_t m_current_surface = 0;
-		uint32_t m_max_surface = 1;
 		init_state m_init_state = init_state::uninit;
 		HWND m_target_window{};
 	};

@@ -33,21 +33,6 @@ namespace draw_interface
 		m_compositor = compositor;
 	}
 
-	void draw_interface::enable_d3d11on12()
-	{
-
-	}
-
-	void draw_interface::disable_d3d11on12()
-	{
-
-	}
-
-	bool draw_interface::is_d3d11on12() const
-	{
-		return false;
-	}
-
 	void draw_interface::init_device_independent_resources()
 	{
 		try
@@ -368,8 +353,8 @@ namespace draw_interface
 		bps = D2D1::BitmapProperties1(D2D1_BITMAP_OPTIONS_CANNOT_DRAW | D2D1_BITMAP_OPTIONS_TARGET, D2D1::PixelFormat(DXGI_FORMAT_B8G8R8A8_UNORM, D2D1_ALPHA_MODE_PREMULTIPLIED));
 		m_d2d1_decivecontext->CreateBitmapFromDxgiSurface(back_buffer_surface.get(), bps, back_buffer_bitmap.put());
 
-		m_d3d11_render_target.emplace(std::begin(m_d3d11_render_target), back_buffer.as<ID3D11Texture2D1>());
-		m_d2d1_render_target.emplace(std::begin(m_d2d1_render_target), back_buffer_bitmap.as<ID2D1Bitmap1>());
+		m_d3d11_render_target = back_buffer.as<ID3D11Texture2D1>();
+		m_d2d1_render_target = back_buffer_bitmap.as<ID2D1Bitmap1>();
 	}
 
 	void draw_interface::create_swapchain(const SIZEL &dimentions)
@@ -424,8 +409,8 @@ namespace draw_interface
 		m_d3d11_devicecontext->ClearState();
 		m_d2d1_decivecontext->SetTarget(nullptr);
 
-		m_d2d1_render_target.clear();
-		m_d3d11_render_target.clear();
+		m_d2d1_render_target = nullptr;
+		m_d3d11_render_target = nullptr;
 	}
 
 	void draw_interface::cleanup_swap_chain()
@@ -450,7 +435,7 @@ namespace draw_interface
 
 	void draw_interface::set_render_targets()
 	{
-		m_d2d1_decivecontext->SetTarget(m_d2d1_render_target[m_current_surface].get());
+		m_d2d1_decivecontext->SetTarget(m_d2d1_render_target.get());
 	}
 
 	void draw_interface::resize_composition_objects(const SIZEL &dimentions)
