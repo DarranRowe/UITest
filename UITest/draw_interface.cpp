@@ -398,10 +398,9 @@ namespace draw_interface
 		m_sc_visual = swap_chain_visual;
 		container.Children().InsertAtBottom(swap_chain_visual);
 		m_composition_target.Root(container);
-		auto desktop_target = m_composition_target.as<winrt::Windows::UI::Composition::Desktop::DesktopWindowTarget>();
 
-		m_sc_visual.Size({ static_cast<float>(dimentions.cx), static_cast<float>(dimentions.cy) });
-		m_root_visual.Size({ static_cast<float>(dimentions.cx), static_cast<float>(dimentions.cy) });
+		auto float_dimentions = winrt::Windows::Foundation::Numerics::float2{ static_cast<float>(dimentions.cx), static_cast<float>(dimentions.cy) };
+		m_sc_visual.Size(float_dimentions);
 	}
 
 	void draw_interface::cleanup_render_targets()
@@ -441,8 +440,8 @@ namespace draw_interface
 	void draw_interface::resize_composition_objects(const SIZEL &dimentions)
 	{
 		using namespace winrt;
+		auto float_dimentions = winrt::Windows::Foundation::Numerics::float2{ static_cast<float>(dimentions.cx), static_cast<float>(dimentions.cy) };
 
-		m_sc_visual.Size({ static_cast<float>(dimentions.cx), static_cast<float>(dimentions.cy) });
-		m_root_visual.Size({ static_cast<float>(dimentions.cx), static_cast<float>(dimentions.cy) });
+		m_sc_visual.Size(float_dimentions);
 	}
 }
