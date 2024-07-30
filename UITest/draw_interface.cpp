@@ -405,6 +405,7 @@ namespace draw_interface
 		check_hresult(compositor_interop->CreateCompositionSurfaceForSwapChain(m_dxgi_swapchain.get(), reinterpret_cast<ABI::Windows::UI::Composition::ICompositionSurface **>(put_abi(swap_chain_surface))));
 
 		auto swap_chain_brush = m_compositor.CreateSurfaceBrush(swap_chain_surface);
+		swap_chain_brush.Stretch(winrt::Windows::UI::Composition::CompositionStretch::None);
 		auto swap_chain_visual = m_compositor.CreateSpriteVisual();
 		swap_chain_visual.Brush(swap_chain_brush);
 
