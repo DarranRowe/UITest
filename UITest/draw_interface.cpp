@@ -427,6 +427,8 @@ namespace draw_interface
 
 		auto swap_chain_brush = m_compositor.CreateSurfaceBrush(swap_chain_surface);
 		swap_chain_brush.Stretch(winrt::Windows::UI::Composition::CompositionStretch::None);
+		swap_chain_brush.HorizontalAlignmentRatio(0.f);
+		swap_chain_brush.VerticalAlignmentRatio(0.f);
 		auto swap_chain_visual = m_compositor.CreateSpriteVisual();
 		swap_chain_visual.Brush(swap_chain_brush);
 
