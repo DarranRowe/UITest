@@ -108,17 +108,12 @@ namespace windowing
 		}
 	}
 
-	void main_window::on_paint()
+	void main_window::on_paint(const PAINTSTRUCT &)
 	{
-		PAINTSTRUCT ps{};
-		auto dc = BeginPaint(get_handle(), &ps);
-
 		if (m_draw_interface)
 		{
 			m_draw_interface->update_frame();
 		}
-
-		EndPaint(get_handle(), &ps);
 	}
 
 	LRESULT main_window::message_handler(UINT msg, WPARAM wparam, LPARAM lparam)

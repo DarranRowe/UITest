@@ -12,6 +12,7 @@ namespace windowing
 		using default_nccreate_policy = window_default_nccreate_t;
 		using mouse_track_policy = window_mouse_track_t;
 		using ncmouse_track_policy = window_ncmouse_track_t;
+		using paint_policy = window_simple_paint_t;
 
 		using my_base = window_t<main_window>;
 		static main_window *create(HINSTANCE);
@@ -23,7 +24,7 @@ namespace windowing
 		void on_destroy();
 		void on_size(resize_type, int32_t, int32_t);
 
-		void on_paint();
+		void on_paint(const PAINTSTRUCT &);
 
 		using my_base::simple_default_message_handler;
 		LRESULT message_handler(UINT, WPARAM, LPARAM);
