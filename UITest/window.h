@@ -25,6 +25,7 @@ namespace windowing
 		void on_size(resize_type, int32_t, int32_t);
 
 		void on_paint(const PAINTSTRUCT &);
+		bool on_erasebkgnd(HDC);
 
 		using my_base::simple_default_message_handler;
 		LRESULT message_handler(UINT, WPARAM, LPARAM);

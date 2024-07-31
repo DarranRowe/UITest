@@ -116,6 +116,11 @@ namespace windowing
 		}
 	}
 
+	bool main_window::on_erasebkgnd(HDC)
+	{
+		return true;
+	}
+
 	LRESULT main_window::message_handler(UINT msg, WPARAM wparam, LPARAM lparam)
 	{
 		return simple_default_message_handler(msg, wparam, lparam);
