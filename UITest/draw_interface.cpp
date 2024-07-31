@@ -1,5 +1,7 @@
 #include "draw_interface.h"
 
+#include <application_helper.hpp>
+
 #include <windows.ui.composition.interop.h>
 
 namespace draw_interface
@@ -145,6 +147,9 @@ namespace draw_interface
 	{
 		try
 		{
+			SIZEL dimentions_cache = dimentions;
+			dimentions_cache.cx = dimentions_cache.cx >= 8 ? dimentions_cache.cx : 8;
+			dimentions_cache.cy = dimentions_cache.cy >= 8 ? dimentions_cache.cy : 8;
 			//It is possible to resize the window when the this object is not in the correct state.
 			//We want to just exit in this case.
 			if (!(m_init_state == init_state::sized || m_init_state == init_state::device_dependent))
@@ -152,16 +157,21 @@ namespace draw_interface
 				return;
 			}
 
+			if (!m_visible)
+			{
+				m_visible = true;
+			}
+
 			if (m_init_state == init_state::device_dependent)
 			{
-				init_sized_resources(dimentions);
+				init_sized_resources(dimentions_cache);
 			}
 			else
 			{
 				cleanup_render_targets();
-				resize_swap_chain(dimentions);
+				resize_swap_chain(dimentions_cache);
 				create_render_targets();
-				resize_composition_objects(dimentions);
+				resize_composition_objects(dimentions_cache);
 			}
 			set_render_targets();
 		}
@@ -174,7 +184,7 @@ namespace draw_interface
 
 	void draw_interface::resize_hide()
 	{
-
+		m_visible = false;
 	}
 
 	void draw_interface::handle_device_lost()
@@ -184,17 +194,43 @@ namespace draw_interface
 
 	void draw_interface::reset()
 	{
+		if (m_init_state != init_state::fail)
+		{
+			application::helper::writeln_debugger(L"Reset should only be called when there was a failure.");
+		}
 
+		m_sc_visual = nullptr;
+		m_root_visual = nullptr;
+		m_d2d1_render_target = nullptr;
+		m_d3d11_render_target = nullptr;
+		m_dxgi_swapchain = nullptr;
+		m_d2d1_decivecontext = nullptr;
+		m_d2d1_device = nullptr;
+		m_d3d11_devicecontext = nullptr;
+		m_d3d11_device = nullptr;
+		m_d3d_feature_level = {};
+		m_dxgi_adapter = nullptr;
+		m_dwrite_factory = nullptr;
+		m_d2d1_factory = nullptr;
+		m_composition_target = nullptr;
+		m_dxgi_factory = nullptr;
+		m_visible = false;
+
+		application::helper::writeln_debugger(L"Drawing interface reset.");
+		m_init_state = init_state::uninit;
 	}
 
 	void draw_interface::update_frame()
 	{
-		m_d2d1_decivecontext->BeginDraw();
+		if (m_visible)
+		{
+			m_d2d1_decivecontext->BeginDraw();
 
-		m_d2d1_decivecontext->Clear(D2D1::ColorF(D2D1::ColorF::HotPink));
+			m_d2d1_decivecontext->Clear(D2D1::ColorF(D2D1::ColorF::HotPink));
 
-		m_d2d1_decivecontext->EndDraw();
-		m_dxgi_swapchain->Present(1, 0);
+			m_d2d1_decivecontext->EndDraw();
+			m_dxgi_swapchain->Present(1, 0);
+		}
 	}
 
 	bool draw_interface::is_failed() const
@@ -292,7 +328,7 @@ namespace draw_interface
 			D3D_FEATURE_LEVEL_11_0
 		};
 
-		D3D_FEATURE_LEVEL d3d_fl;
+		D3D_FEATURE_LEVEL d3d_fl{};
 		com_ptr<ID3D11Device> d3d_device;
 		com_ptr<ID3D11DeviceContext> d3d_devicectx;
 

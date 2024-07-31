@@ -102,5 +102,6 @@ namespace draw_interface
 
 		init_state m_init_state = init_state::uninit;
 		HWND m_target_window{};
+		bool m_visible = false;
 	};
 }
