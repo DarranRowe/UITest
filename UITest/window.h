@@ -44,5 +44,9 @@ namespace windowing
 		main_window &operator=(main_window &&) = delete;
 
 		std::unique_ptr<draw_interface::draw_interface> m_draw_interface;
+		winrt::Windows::System::DispatcherQueue m_my_queue{ nullptr };
+		winrt::Windows::System::DispatcherQueue m_timer_queue{ nullptr };
+		winrt::Windows::System::DispatcherQueueTimer m_timer{ nullptr };
+		winrt::Windows::System::DispatcherQueueTimer::Tick_revoker m_timer_tick_revoker{};
 	};
 }

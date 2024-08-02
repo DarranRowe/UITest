@@ -1,6 +1,8 @@
 #include "window.h"
 #include <application.hpp>
 #include <application_helper.hpp>
+#include <application_dispatcher_queue.hpp>
+#include <application_dispatcher_queue_projection.hpp>
 
 namespace windowing
 {
@@ -62,6 +64,26 @@ namespace windowing
 	bool main_window::on_create(const CREATESTRUCTW &)
 	{
 		bool succeeded = true;
+		application::application_system_dispatcher_queue queue_control;
+		auto queue_id = queue_control.create_background_dispatcher_queue();
+		m_my_queue = application::projection::application_system_dispatcher_queue_access::get_thread_dispatcher_queue();
+
+		m_timer_queue = application::projection::application_system_dispatcher_queue_access::get_background_dispatcher_queue(queue_id);
+
+		m_timer = m_timer_queue.CreateTimer();
+
+		winrt::Windows::Foundation::TimeSpan ts = std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::duration<double>{1. / 60});
+		m_timer.Interval(ts);
+
+		m_timer_tick_revoker = m_timer.Tick(winrt::auto_revoke, [this](auto &&, auto &&)
+			{
+				m_my_queue.TryEnqueue([this]()
+					{
+						m_draw_interface->update_frame();
+					});
+			});
+
+		m_timer.Start();
 
 		m_draw_interface = std::make_unique<draw_interface::draw_interface>(get_handle());
 		m_draw_interface->init_device_independent_resources();
@@ -75,7 +97,8 @@ namespace windowing
 
 	void main_window::on_close()
 	{
-		DestroyWindow(get_handle());
+		m_timer.Stop();
+		PostMessageW(get_handle(), WM_USER + 10, 0, 0);
 	}
 
 	void main_window::on_destroy()
@@ -110,10 +133,6 @@ namespace windowing
 
 	void main_window::on_paint(const PAINTSTRUCT &)
 	{
-		if (m_draw_interface)
-		{
-			m_draw_interface->update_frame();
-		}
 	}
 
 	bool main_window::on_erasebkgnd(HDC)
@@ -123,6 +142,12 @@ namespace windowing
 
 	LRESULT main_window::message_handler(UINT msg, WPARAM wparam, LPARAM lparam)
 	{
+		if (msg == WM_USER + 10)
+		{
+			DestroyWindow(get_handle());
+			return 0;
+		}
+
 		return simple_default_message_handler(msg, wparam, lparam);
 	}
 }

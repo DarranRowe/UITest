@@ -56,9 +56,11 @@ namespace draw_interface
 		void init_dxgi();
 		void init_d3d11();
 		void init_d2d1();
+		void init_dwrite();
 		void cleanup_dxgi();
 		void cleanup_d3d11();
 		void cleanup_d2d1();
+		void cleanup_dwrite();
 
 		void create_render_targets();
 		void create_swapchain(const SIZEL &);
@@ -70,6 +72,8 @@ namespace draw_interface
 		void resize_swap_chain(const SIZEL &);
 		void set_render_targets();
 		void resize_composition_objects(const SIZEL &);
+
+		void update_text();
 
 		//DXGI interfaces.
 		//We start off with the highest version and then
@@ -89,10 +93,13 @@ namespace draw_interface
 		winrt::com_ptr<ID2D1Factory8> m_d2d1_factory;
 		winrt::com_ptr<ID2D1Device7> m_d2d1_device;
 		winrt::com_ptr<ID2D1DeviceContext7> m_d2d1_decivecontext;
+		winrt::com_ptr<ID2D1SolidColorBrush> m_d2d1_text_brush;
 		winrt::com_ptr<ID2D1Bitmap1> m_d2d1_render_target;
 
 		//DWrite
 		winrt::com_ptr<IDWriteFactory7> m_dwrite_factory;
+		winrt::com_ptr<IDWriteTextLayout4> m_dwrite_textlayout;
+		winrt::com_ptr<IDWriteTextFormat3> m_dwrite_textformat;
 
 		//Composition
 		winrt::Windows::UI::Composition::Compositor m_compositor{ nullptr };
@@ -103,5 +110,8 @@ namespace draw_interface
 		init_state m_init_state = init_state::uninit;
 		HWND m_target_window{};
 		bool m_visible = false;
+		bool m_sizing = false;
+		uint64_t m_frame_count{};
+		uint64_t m_text_value{ UINT64_MAX };
 	};
 }

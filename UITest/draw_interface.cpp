@@ -112,11 +112,12 @@ namespace draw_interface
 		{
 			_ASSERTE(m_init_state == init_state::device_dependent);
 
-			m_init_state = init_state::sized;
-
 			create_swapchain(dimentions);
 			create_render_targets();
 			create_composition_objects(dimentions);
+			init_dwrite();
+
+			m_init_state = init_state::sized;
 		}
 		catch (...)
 		{
@@ -132,6 +133,7 @@ namespace draw_interface
 			_ASSERTE(m_init_state == init_state::sized);
 			m_init_state = init_state::device_dependent;
 
+			cleanup_dwrite();
 			cleanup_composition_objects();
 			cleanup_render_targets();
 			cleanup_swap_chain();
@@ -145,6 +147,7 @@ namespace draw_interface
 
 	void draw_interface::resize(const SIZEL &dimentions)
 	{
+		m_sizing = true;
 		try
 		{
 			SIZEL dimentions_cache = dimentions;
@@ -180,6 +183,7 @@ namespace draw_interface
 			m_init_state = init_state::fail;
 			throw;
 		}
+		m_sizing = false;
 	}
 
 	void draw_interface::resize_hide()
@@ -201,9 +205,12 @@ namespace draw_interface
 
 		m_sc_visual = nullptr;
 		m_root_visual = nullptr;
+		m_dwrite_textlayout = nullptr;
+		m_dwrite_textformat = nullptr;
 		m_d2d1_render_target = nullptr;
 		m_d3d11_render_target = nullptr;
 		m_dxgi_swapchain = nullptr;
+		m_d2d1_text_brush = nullptr;
 		m_d2d1_decivecontext = nullptr;
 		m_d2d1_device = nullptr;
 		m_d3d11_devicecontext = nullptr;
@@ -222,14 +229,40 @@ namespace draw_interface
 
 	void draw_interface::update_frame()
 	{
-		if (m_visible)
+		if (m_visible && !m_sizing)
 		{
+			++m_frame_count;
+			update_text();
+
 			m_d2d1_decivecontext->BeginDraw();
 
 			m_d2d1_decivecontext->Clear(D2D1::ColorF(D2D1::ColorF::HotPink));
+			m_d2d1_decivecontext->DrawTextLayout(D2D1::Point2F(50.f, 50.f), m_dwrite_textlayout.get(), m_d2d1_text_brush.get());
 
 			m_d2d1_decivecontext->EndDraw();
 			m_dxgi_swapchain->Present(1, 0);
+		}
+	}
+
+	void draw_interface::update_text()
+	{
+		using namespace winrt;
+		if ((m_frame_count % 60) == 0)
+		{
+			++m_text_value;
+
+			auto fmt_string = std::format(L"Text value: {}.", m_text_value);
+
+			m_dwrite_textlayout = nullptr;
+			m_dwrite_textformat = nullptr;
+
+			com_ptr<IDWriteTextFormat> text_format;
+			com_ptr<IDWriteTextLayout> text_layout;
+			check_hresult(m_dwrite_factory->CreateTextFormat(L"Arial", nullptr, DWRITE_FONT_WEIGHT_REGULAR, DWRITE_FONT_STYLE_NORMAL, DWRITE_FONT_STRETCH_NORMAL, 36.f, L"en-gb", text_format.put()));
+			check_hresult(m_dwrite_factory->CreateTextLayout(fmt_string.data(), fmt_string.size(), text_format.get(), 500.f, 500.f, text_layout.put()));
+
+			m_dwrite_textformat = text_format.as<IDWriteTextFormat3>();
+			m_dwrite_textlayout = text_layout.as<IDWriteTextLayout4>();
 		}
 	}
 
@@ -347,12 +380,21 @@ namespace draw_interface
 		com_ptr<ID2D1Device> d2d_device;
 		com_ptr<ID2D1DeviceContext> d2d_devicectx;
 		com_ptr<IDXGIDevice> dxgi_device = m_d3d11_device.as<IDXGIDevice>();
+		com_ptr<ID2D1SolidColorBrush> d2d_text_brush;
 		
 		check_hresult(m_d2d1_factory->CreateDevice(dxgi_device.get(), d2d_device.put()));
 		check_hresult(d2d_device->CreateDeviceContext(D2D1_DEVICE_CONTEXT_OPTIONS_NONE, d2d_devicectx.put()));
 
+		check_hresult(d2d_devicectx->CreateSolidColorBrush(D2D1::ColorF(D2D1::ColorF::Black), d2d_text_brush.put()));
+
 		m_d2d1_device = d2d_device.as<ID2D1Device7>();
 		m_d2d1_decivecontext = d2d_devicectx.as<ID2D1DeviceContext7>();
+		m_d2d1_text_brush = d2d_text_brush;
+	}
+
+	void draw_interface::init_dwrite()
+	{
+		update_text();
 	}
 
 	void draw_interface::cleanup_dxgi()
@@ -369,8 +411,15 @@ namespace draw_interface
 
 	void draw_interface::cleanup_d2d1()
 	{
+		m_d2d1_text_brush = nullptr;
 		m_d2d1_decivecontext = nullptr;
 		m_d2d1_device = nullptr;
+	}
+
+	void draw_interface::cleanup_dwrite()
+	{
+		m_dwrite_textlayout = nullptr;
+		m_dwrite_textformat = nullptr;
 	}
 
 	void draw_interface::create_render_targets()
