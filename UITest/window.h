@@ -28,9 +28,13 @@ namespace windowing
 		bool on_erasebkgnd(HDC);
 
 		using my_base::simple_default_message_handler;
+		std::pair<LRESULT, bool> process_window_messages(UINT, WPARAM, LPARAM);
 		LRESULT message_handler(UINT, WPARAM, LPARAM);
 
+		void on_deferquit();
+
 		inline static wchar_t class_name[] = L"Main Window Class";
+		constexpr inline static UINT WM_DEFERQUIT = WM_USER + 10;
 	private:
 		//Needed for window_t to access message_handler.
 		friend class my_base;

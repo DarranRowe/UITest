@@ -140,12 +140,35 @@ namespace windowing
 		return true;
 	}
 
+	void main_window::on_deferquit()
+	{
+		DestroyWindow(get_handle());
+	}
+
+	std::pair<LRESULT, bool> main_window::process_window_messages(UINT msg, WPARAM wparam, LPARAM lparam)
+	{
+		bool handled = false;
+		LRESULT result = 0;
+
+		switch (msg)
+		{
+		case WM_DEFERQUIT:
+		{
+			on_deferquit();
+			handled = true;
+			break;
+		}
+		}
+
+		return { result, handled };
+	}
+
 	LRESULT main_window::message_handler(UINT msg, WPARAM wparam, LPARAM lparam)
 	{
-		if (msg == WM_USER + 10)
+		auto [result, handled] = process_window_messages(msg, wparam, lparam);
+		if (handled)
 		{
-			DestroyWindow(get_handle());
-			return 0;
+			return result;
 		}
 
 		return simple_default_message_handler(msg, wparam, lparam);
