@@ -1,10 +1,14 @@
 #pragma once
+#define ENABLE_WINDOW_TYPE_STATIC_ASSERTS 1
+#define ENABLE_WINDOW_TYPE_ADDITIONAL_STATIC_ASSERTS 1
 #include "window.hpp"
 #include "framework.h"
 #include "draw_interface.h"
 
 namespace windowing
 {
+	struct meh {};
+
 	class main_window : public window_t<main_window>
 	{
 	public:
@@ -12,7 +16,6 @@ namespace windowing
 		using default_nccreate_policy = window_default_nccreate_t;
 		using mouse_track_policy = window_mouse_track_t;
 		using ncmouse_track_policy = window_ncmouse_track_t;
-		using paint_policy = window_simple_paint_t;
 
 		using my_base = window_t<main_window>;
 		static main_window *create(HINSTANCE);

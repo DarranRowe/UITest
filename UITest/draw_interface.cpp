@@ -221,6 +221,7 @@ namespace draw_interface
 		m_d2d1_factory = nullptr;
 		m_composition_target = nullptr;
 		m_dxgi_factory = nullptr;
+		m_wic_factory = nullptr;
 		m_visible = false;
 
 		application::helper::writeln_debugger(L"Drawing interface reset.");
@@ -280,6 +281,10 @@ namespace draw_interface
 	{
 		using namespace winrt;
 
+		com_ptr<IWICImagingFactory2> wic_factory;
+
+		check_hresult(CoCreateInstance(CLSID_WICImagingFactory2, nullptr, CLSCTX_INPROC_SERVER, IID_PPV_ARGS(wic_factory.put())));
+
 		com_ptr<IDXGIFactory> dxgi_fact;
 
 		UINT dxgi_flags = 0;
@@ -304,10 +309,12 @@ namespace draw_interface
 		m_dxgi_factory = dxgi_fact.as<IDXGIFactory7>();
 		m_d2d1_factory = d2d1_fact.as<ID2D1Factory8>();
 		m_dwrite_factory = dwrite_fact.as<IDWriteFactory7>();
+		m_wic_factory = wic_factory;
 	}
 
 	void draw_interface::cleanup_factories()
 	{
+		m_wic_factory = nullptr;
 		m_dwrite_factory = nullptr;
 		m_d2d1_factory = nullptr;
 		m_dxgi_factory = nullptr;

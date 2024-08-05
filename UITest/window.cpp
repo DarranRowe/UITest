@@ -145,7 +145,7 @@ namespace windowing
 		DestroyWindow(get_handle());
 	}
 
-	std::pair<LRESULT, bool> main_window::process_window_messages(UINT msg, WPARAM wparam, LPARAM lparam)
+	std::pair<LRESULT, bool> main_window::process_window_messages(UINT msg, [[maybe_unused]] WPARAM wparam, [[maybe_unused]] LPARAM lparam)
 	{
 		bool handled = false;
 		LRESULT result = 0;
