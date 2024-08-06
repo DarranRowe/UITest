@@ -1,6 +1,4 @@
 #pragma once
-#define ENABLE_WINDOW_TYPE_STATIC_ASSERTS 1
-#define ENABLE_WINDOW_TYPE_ADDITIONAL_STATIC_ASSERTS 1
 #include "window.hpp"
 #include "framework.h"
 #include "draw_interface.h"
