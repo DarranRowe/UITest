@@ -260,7 +260,7 @@ namespace draw_interface
 			com_ptr<IDWriteTextFormat> text_format;
 			com_ptr<IDWriteTextLayout> text_layout;
 			check_hresult(m_dwrite_factory->CreateTextFormat(L"Arial", nullptr, DWRITE_FONT_WEIGHT_REGULAR, DWRITE_FONT_STYLE_NORMAL, DWRITE_FONT_STRETCH_NORMAL, 36.f, L"en-gb", text_format.put()));
-			check_hresult(m_dwrite_factory->CreateTextLayout(fmt_string.data(), fmt_string.size(), text_format.get(), 500.f, 500.f, text_layout.put()));
+			check_hresult(m_dwrite_factory->CreateTextLayout(fmt_string.data(), static_cast<UINT32>(fmt_string.size()), text_format.get(), 500.f, 500.f, text_layout.put()));
 
 			m_dwrite_textformat = text_format.as<IDWriteTextFormat3>();
 			m_dwrite_textlayout = text_layout.as<IDWriteTextLayout4>();
