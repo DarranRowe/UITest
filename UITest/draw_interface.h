@@ -101,9 +101,6 @@ namespace draw_interface
 		winrt::com_ptr<IDWriteTextLayout4> m_dwrite_textlayout;
 		winrt::com_ptr<IDWriteTextFormat3> m_dwrite_textformat;
 
-		//WIC
-		winrt::com_ptr<IWICImagingFactory2> m_wic_factory;
-
 		//Composition
 		winrt::Windows::UI::Composition::Compositor m_compositor{ nullptr };
 		winrt::Windows::UI::Composition::CompositionTarget m_composition_target{ nullptr };
